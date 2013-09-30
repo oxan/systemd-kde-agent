@@ -1,4 +1,4 @@
-/*  This file is part of the KDE project
+/*
     Copyright (C) 2009, 2010 Jaroslav Reznik <jreznik@redhat.com>
     Copyright (C) 2013 Oxan van Leeuwen <oxan@oxanvanleeuwen.nl>
 
@@ -19,7 +19,7 @@
 
 */
 
-#include "systemdkde.h"
+#include "SystemdKDEAgent.h"
 #include "AuthDialog.h"
 
 #include <QFileInfo>
@@ -31,7 +31,7 @@
 #include <stdint.h>
 #include <time.h>
 
-SystemdKDE::SystemdKDE() : m_dirWatch(0)
+SystemdKDEAgent::SystemdKDEAgent() : m_dirWatch(0)
 {
     setQuitOnLastWindowClosed(false);
 
@@ -42,11 +42,11 @@ SystemdKDE::SystemdKDE() : m_dirWatch(0)
     connect(m_dirWatch, SIGNAL(created(const QString &)), this, SLOT(created(const QString &)));
 }
 
-SystemdKDE::~SystemdKDE()
+SystemdKDEAgent::~SystemdKDEAgent()
 {
 }
 
-void SystemdKDE::created(const QString & path)
+void SystemdKDEAgent::created(const QString & path)
 {
     QFileInfo pf(path);
     if (pf.baseName() == "ask" && pf.isFile() && !pf.isSymLink())

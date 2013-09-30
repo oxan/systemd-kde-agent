@@ -1,6 +1,6 @@
 set(systemd_agent_SRCS
-    systemdkde.cpp
     main.cpp
+    SystemdKDEAgent.cpp
     AuthDialog.cpp
 )
 

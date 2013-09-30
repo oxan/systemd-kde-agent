@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=SystemD Password Agent
-Comment=SystemD Password Agent
+Name=Systemd Password Agent
+Comment=Systemd Password Agent
 Exec=${LIBEXEC_INSTALL_DIR}/systemd-kde-agent
 Terminal=false
 Type=Application

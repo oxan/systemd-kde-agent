@@ -1,4 +1,4 @@
-/*  This file is part of the KDE project
+/*
     Copyright (C) 2009, 2010 Jaroslav Reznik <jreznik@redhat.com>
     Copyright (C) 2013 Oxan van Leeuwen <oxan@oxanvanleeuwen.nl>
 
@@ -27,12 +27,12 @@
 #include <KUniqueApplication>
 #include <KDirWatch>
 
-class SystemdKDE : public KUniqueApplication
+class SystemdKDEAgent : public KUniqueApplication
 {
     Q_OBJECT
 public:
-    SystemdKDE();
-    virtual ~SystemdKDE();
+    SystemdKDEAgent();
+    virtual ~SystemdKDEAgent();
 
 private:
     KDirWatch *m_dirWatch;
