@@ -47,7 +47,7 @@ void SystemdKDE::created(const QString & path)
     QFileInfo pf(path);
     if (pf.baseName() == "ask" && pf.isFile() && !pf.isSymLink())
     {
-        kDebug() << "Asking for password in file" << pf;
+        kDebug() << "Asking for password due to ask file" << pf.fileName();
 
         AuthDialog *dialog = new AuthDialog(path);
         connect(m_dirWatch, SIGNAL(deleted(const QString &)), dialog, SLOT(closeDialog(const QString &)));
