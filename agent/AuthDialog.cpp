@@ -21,15 +21,14 @@
 
 #include "AuthDialog.h"
 
-#include <QtCore/QProcess>
 #include <QtGui/QPainter>
-#include <QtGui/QStandardItemModel>
 #include <QSettings>
+#include <QStringList>
 
 #include <KDebug>
 
-#include <KToolInvocation>
 #include <KUser>
+#include <KProcess>
 
 AuthDialog::AuthDialog(const QString & file)
         : KDialog(0, Qt::Dialog), m_passwordFileName(file)
@@ -47,7 +46,7 @@ AuthDialog::AuthDialog(const QString & file)
 
     if (message.isEmpty()) {
         kWarning() << "Could not get action message for action.";
-        lblHeader->hide();
+        lblHeader->setText("<h3>" + ki18n("No action message provided").toString() + "</h3>");
     } else {
         kDebug() << "Message of action: " << message;
         lblHeader->setText("<h3>" + message + "</h3>");
@@ -94,7 +93,18 @@ void AuthDialog::askFileDeleted(const QString & file)
 void AuthDialog::dialogAccepted()
 {
     kDebug() << "Password dialog accepted";
-    closeDialog();
+    hide();
+
+    // Inspired by the GNOME agent
+    KProcess * pkexec = new KProcess();
+    pkexec->setProgram("/usr/bin/pkexec", QStringList() << "/lib/systemd/systemd-reply-password" << "1" << m_socketLocation);
+    pkexec->start();
+    pkexec->write(lePassword->text().toUtf8());
+    pkexec->write("\n");
+    pkexec->waitForFinished();
+
+    kDebug() << "Send password to systemd";
+    deleteLater();
 }
 
 void AuthDialog::dialogCanceled()

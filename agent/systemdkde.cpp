@@ -50,7 +50,7 @@ void SystemdKDE::created(const QString & path)
         kDebug() << "Asking for password due to ask file" << pf.fileName();
 
         AuthDialog *dialog = new AuthDialog(path);
-        connect(m_dirWatch, SIGNAL(deleted(const QString &)), dialog, SLOT(closeDialog(const QString &)));
+        connect(m_dirWatch, SIGNAL(deleted(const QString &)), dialog, SLOT(askFileDeleted(const QString &)));
         connect(dialog, SIGNAL(okClicked()), dialog, SLOT(dialogAccepted()));
         connect(dialog, SIGNAL(cancelClicked()), dialog, SLOT(dialogCanceled()));
 
