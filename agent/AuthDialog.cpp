@@ -41,6 +41,7 @@ AuthDialog::AuthDialog(const QString & file)
     QSettings ask(m_passwordFileName, QSettings::IniFormat);
     ask.beginGroup("Ask");
     QString message = ask.value("Message", "Enter password").toString();
+    QString iconName = ask.value("Icon").toString();
     m_socketLocation = ask.value("Socket").toString();
     ask.endGroup();
 
@@ -60,6 +61,26 @@ AuthDialog::AuthDialog(const QString & file)
                                                     KIconLoader::DefaultState);
     // create a painter to paint the action icon over the key icon
     QPainter painter(&icon);
+    const int iconSize = icon.size().width();
+    // restrict the emblem icon to size 32
+    int overlaySize = 32;
+    // try to load the action icon
+    const QPixmap pixmap = KIconLoader::global()->loadIcon(iconName,
+                                                           KIconLoader::NoGroup,
+                                                           overlaySize,
+                                                           KIconLoader::DefaultState,
+                                                           QStringList(),
+                                                           0,
+                                                           true);
+    // if we're able to load the action icon paint it over the
+    // key icon.
+    if (!pixmap.isNull()) {
+        QPoint startPoint;
+        // bottom right corner
+        startPoint = QPoint(iconSize - overlaySize - 2,
+                            iconSize - overlaySize - 2);
+        painter.drawPixmap(startPoint, pixmap);
+    }
 
     setWindowIcon(icon);
     lblPixmap->setPixmap(icon);
