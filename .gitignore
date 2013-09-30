@@ -1,0 +1,13 @@
+CMakeCache.txt
+CMakeFiles
+CMakeTmp
+*.cmake
+Makefile
+
+moc_*
+*_automoc*
+
+agent/ui_AuthDialog.h
+
+agent/systemd-kde-authentication-agent-1
+agent/systemd-kde-authentication-agent-1.shell
