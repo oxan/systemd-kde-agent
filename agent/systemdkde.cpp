@@ -21,18 +21,19 @@
 #include "systemdkde.h"
 #include "AuthDialog.h"
 
-#include <KDebug>
 #include <QFileInfo>
-#include <QSettings>
+
+#include <KDebug>
+#include <KWindowSystem>
 
 SystemdKDE::SystemdKDE() : m_dirWatch(0)
 {
     setQuitOnLastWindowClosed(false);
 
-    kDebug() << "Setting watch";
+    kDebug() << "Creating filesystem watcher";
 
     m_dirWatch = new KDirWatch(this);
-    m_dirWatch->addDir("/home/jreznik/test/ask-password", KDirWatch::WatchFiles);
+    m_dirWatch->addDir("/run/systemd/ask-password", KDirWatch::WatchFiles);
     connect(m_dirWatch, SIGNAL(created(const QString &)), this, SLOT(created(const QString &)));
 }
 
@@ -45,16 +46,14 @@ void SystemdKDE::created(const QString & path)
     QFileInfo pf(path);
     if (pf.baseName() == "ask" && pf.isFile() && !pf.isSymLink())
     {
-        kDebug() << "Ask for password";
+        kDebug() << "Asking for password in file" << pf;
 
-        QSettings ask(path, QSettings::IniFormat);
-        ask.beginGroup("Ask");
-        QString message = ask.value("Message", "Enter password").toString();
-        ask.endGroup();
+        AuthDialog *dialog = new AuthDialog(path);
+        connect(m_dirWatch, SIGNAL(deleted(const QString &)), dialog, SLOT(closeDialog(const QString &)));
+        connect(dialog, SIGNAL(okClicked()), dialog, SLOT(dialogAccepted()));
+        connect(dialog, SIGNAL(cancelClicked()), dialog, SLOT(dialogCanceled()));
 
-        AuthDialog *authDialog = new AuthDialog(path);
-        connect(m_dirWatch, SIGNAL(deleted(const QString &)), authDialog, SLOT(finishDialog(const QString &)));
-
-        authDialog->show();
+        dialog->show();
+        KWindowSystem::forceActiveWindow(dialog->winId());
     }
 }

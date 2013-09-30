@@ -21,6 +21,8 @@
 #ifndef SYSTEMDKDE_H
 #define SYSTEMDKDE_H
 
+#include "AuthDialog.h"
+
 #include <KUniqueApplication>
 #include <KDirWatch>
 
@@ -30,8 +32,11 @@ class SystemdKDE : public KUniqueApplication
 public:
     SystemdKDE();
     virtual ~SystemdKDE();
+
 private:
     KDirWatch *m_dirWatch;
+    AuthDialog *m_dialog;
+
 private slots:
     void created(const QString & path);
 };

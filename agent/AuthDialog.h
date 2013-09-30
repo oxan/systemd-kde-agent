@@ -32,11 +32,15 @@ public:
 
 public slots:
     virtual void accept();
-    void finishDialog(const QString & file);
+    void askFileDeleted(const QString & file);
+    void dialogAccepted();
+    void dialogCanceled();
 
 private:
     QString m_passwordFileName;
+    QString m_socketLocation;
 
+    void closeDialog();
 };
 
 #endif // AUTHDIALOG_H

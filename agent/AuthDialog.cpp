@@ -23,6 +23,7 @@
 #include <QtCore/QProcess>
 #include <QtGui/QPainter>
 #include <QtGui/QStandardItemModel>
+#include <QSettings>
 
 #include <KDebug>
 
@@ -36,6 +37,34 @@ AuthDialog::AuthDialog(const QString & file)
     // the dialog needs to be modal to darken the parent window
     setModal(true);
     setButtons(Ok | Cancel);
+
+    QSettings ask(m_passwordFileName, QSettings::IniFormat);
+    ask.beginGroup("Ask");
+    QString message = ask.value("Message", "Enter password").toString();
+    m_socketLocation = ask.value("Socket").toString();
+    ask.endGroup();
+
+    if (message.isEmpty()) {
+        kWarning() << "Could not get action message for action.";
+        lblHeader->hide();
+    } else {
+        kDebug() << "Message of action: " << message;
+        lblHeader->setText("<h3>" + message + "</h3>");
+        setCaption(message);
+    }
+
+    // loads the standard key icon
+    QPixmap icon = KIconLoader::global()->loadIcon("dialog-password",
+                                                    KIconLoader::NoGroup,
+                                                    KIconLoader::SizeHuge,
+                                                    KIconLoader::DefaultState);
+    // create a painter to paint the action icon over the key icon
+    QPainter painter(&icon);
+
+    setWindowIcon(icon);
+    lblPixmap->setPixmap(icon);
+
+    lePassword->setFocus();
 }
 
 AuthDialog::~AuthDialog()
@@ -45,11 +74,30 @@ AuthDialog::~AuthDialog()
 void AuthDialog::accept()
 {
     // Do nothing, do not close the dialog. This is needed so that the dialog stays
+    lePassword->setEnabled(false);
     return;
 }
 
-void AuthDialog::finishDialog(const QString & file)
+void AuthDialog::closeDialog()
+{
+    hide();
+    deleteLater();
+}
+
+void AuthDialog::askFileDeleted(const QString & file)
 {
     if (m_passwordFileName == file)
-        hide();
+        closeDialog();
+}
+
+void AuthDialog::dialogAccepted()
+{
+    kDebug() << "Password dialog accepted";
+    closeDialog();
+}
+
+void AuthDialog::dialogCanceled()
+{
+    kDebug() << "Password dialog canceled";
+    closeDialog();
 }
