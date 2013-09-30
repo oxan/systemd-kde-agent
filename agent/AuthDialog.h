@@ -24,11 +24,13 @@
 
 #include "ui_AuthDialog.h"
 
+#include <QSettings>
+
 class AuthDialog : public KDialog, private Ui::AuthDialog
 {
     Q_OBJECT
 public:
-    AuthDialog(const QString & file);
+    AuthDialog(const QString & file, QSettings & settings);
     ~AuthDialog();
 
 public slots:

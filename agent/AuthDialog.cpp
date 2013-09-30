@@ -30,7 +30,7 @@
 #include <KUser>
 #include <KProcess>
 
-AuthDialog::AuthDialog(const QString & file)
+AuthDialog::AuthDialog(const QString & file, QSettings & settings)
         : KDialog(0, Qt::Dialog), m_passwordFileName(file)
 {
     setupUi(mainWidget());
@@ -38,12 +38,11 @@ AuthDialog::AuthDialog(const QString & file)
     setModal(true);
     setButtons(Ok | Cancel);
 
-    QSettings ask(m_passwordFileName, QSettings::IniFormat);
-    ask.beginGroup("Ask");
-    QString message = ask.value("Message", "Enter password").toString();
-    QString iconName = ask.value("Icon").toString();
-    m_socketLocation = ask.value("Socket").toString();
-    ask.endGroup();
+    settings.beginGroup("Ask");
+    QString message = settings.value("Message", "Enter password").toString();
+    QString iconName = settings.value("Icon").toString();
+    m_socketLocation = settings.value("Socket").toString();
+    settings.endGroup();
 
     if (message.isEmpty()) {
         kWarning() << "Could not get action message for action.";
@@ -131,5 +130,6 @@ void AuthDialog::dialogAccepted()
 void AuthDialog::dialogCanceled()
 {
     kDebug() << "Password dialog canceled";
+    // TODO: should we send the cancellation to systemd here?
     closeDialog();
 }

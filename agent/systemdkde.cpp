@@ -23,9 +23,13 @@
 #include "AuthDialog.h"
 
 #include <QFileInfo>
+#include <QSettings>
 
 #include <KDebug>
 #include <KWindowSystem>
+
+#include <stdint.h>
+#include <time.h>
 
 SystemdKDE::SystemdKDE() : m_dirWatch(0)
 {
@@ -47,9 +51,26 @@ void SystemdKDE::created(const QString & path)
     QFileInfo pf(path);
     if (pf.baseName() == "ask" && pf.isFile() && !pf.isSymLink())
     {
-        kDebug() << "Asking for password due to ask file" << pf.fileName();
+        kDebug() << "Asking for password due to ask file" << path;
 
-        AuthDialog *dialog = new AuthDialog(path);
+        QSettings ask(path, QSettings::IniFormat);
+        ask.beginGroup("Ask");
+        qulonglong notAfter = ask.value("NotAfter").toULongLong();
+        if(notAfter != 0)
+        {
+            struct timespec monotime;
+            clock_gettime(CLOCK_MONOTONIC, &monotime);
+            quint64 time = monotime.tv_sec * 1000000 + monotime.tv_nsec / 1000;
+
+            if(time > ask.value("NotAfter").toULongLong())
+            {
+                kDebug() << "Ignoring because NotAfter is in the past";
+                return;
+            }
+        }
+        ask.endGroup();
+
+        AuthDialog *dialog = new AuthDialog(path, ask);
         connect(m_dirWatch, SIGNAL(deleted(const QString &)), dialog, SLOT(askFileDeleted(const QString &)));
         connect(dialog, SIGNAL(okClicked()), dialog, SLOT(dialogAccepted()));
         connect(dialog, SIGNAL(cancelClicked()), dialog, SLOT(dialogCanceled()));
