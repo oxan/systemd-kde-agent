@@ -6,8 +6,8 @@ Makefile
 
 moc_*
 *_automoc*
+ui_*
 
-agent/ui_AuthDialog.h
-
-agent/systemd-kde-authentication-agent-1
-agent/systemd-kde-authentication-agent-1.shell
+agent/systemd-kde-agent
+agent/systemd-kde-agent.shell
+systemd-kde-agent.desktop

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=SystemD Password Agent
+Comment=SystemD Password Agent
+Exec=${LIBEXEC_INSTALL_DIR}/systemd-kde-agent
+Terminal=false
+Type=Application
+Categories=
+X-Desktop-File-Install-Version=0.15
+OnlyShowIn=KDE;

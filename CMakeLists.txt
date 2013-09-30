@@ -1,4 +1,4 @@
-project(polkit-kde-1)
+project(systemd-kde-agent)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
@@ -7,12 +7,6 @@ include (KDE4Defaults)
 include (MacroLibrary)
 include (FindPkgConfig)
 
-
 include_directories(${KDE4_INCLUDES})
 
 add_subdirectory(agent)
-
-#find_package(Msgfmt REQUIRED)
-#find_package(Gettext REQUIRED)
-#add_subdirectory( po )
-#add_subdirectory( doc-translations )
