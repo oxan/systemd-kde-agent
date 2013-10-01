@@ -98,38 +98,41 @@ void AuthDialog::accept()
     return;
 }
 
-void AuthDialog::closeDialog()
+void AuthDialog::sendResponse(bool result, const QString & password)
 {
-    hide();
+    kDebug() << "Sending response to systemd:" << result;
+
+    KProcess * pkexec = new KProcess();
+    pkexec->setProgram("/usr/bin/pkexec", QStringList() << "/lib/systemd/systemd-reply-password" << (result ? "1" : "0") << m_socketLocation);
+    pkexec->start();
+    if (result) {
+        pkexec->write(password.toUtf8());
+        pkexec->write("\n");
+    }
+    pkexec->waitForFinished();
+
+    kDebug() << "Sent response to systemd";
     deleteLater();
 }
 
 void AuthDialog::askFileDeleted(const QString & file)
 {
-    if (m_passwordFileName == file)
-        closeDialog();
+    if (m_passwordFileName == file) {
+        hide();
+        deleteLater();
+    }
 }
 
 void AuthDialog::dialogAccepted()
 {
-    kDebug() << "Password dialog accepted";
     hide();
-
-    // Inspired by the GNOME agent
-    KProcess * pkexec = new KProcess();
-    pkexec->setProgram("/usr/bin/pkexec", QStringList() << "/lib/systemd/systemd-reply-password" << "1" << m_socketLocation);
-    pkexec->start();
-    pkexec->write(lePassword->text().toUtf8());
-    pkexec->write("\n");
-    pkexec->waitForFinished();
-
-    kDebug() << "Send password to systemd";
+    sendResponse(true, lePassword->text().toUtf8());
     deleteLater();
 }
 
 void AuthDialog::dialogCanceled()
 {
-    kDebug() << "Password dialog canceled";
-    // TODO: should we send the cancellation to systemd here?
-    closeDialog();
+    hide();
+    sendResponse(false, NULL);
+    deleteLater();
 }

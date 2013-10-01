@@ -43,7 +43,7 @@ private:
     QString m_passwordFileName;
     QString m_socketLocation;
 
-    void closeDialog();
+    void sendResponse(bool result, const QString & password);
 };
 
 #endif // AUTHDIALOG_H
